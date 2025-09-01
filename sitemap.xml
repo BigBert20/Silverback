@@ -6,10 +6,28 @@
       <priority>1.0</priority>
    </url>
 
+   <!-- About Page -->
+   <url>
+      <loc>https://www.silverbackrepairs.com/about</loc>
+      <priority>0.8</priority>
+   </url>
+
    <!-- Services Page -->
    <url>
       <loc>https://www.silverbackrepairs.com/services</loc>
       <priority>0.8</priority>
+   </url>
+
+   <!-- Gallery Page -->
+   <url>
+      <loc>https://www.silverbackrepairs.com/gallery</loc>
+      <priority>0.7</priority>
+   </url>
+
+   <!-- Testimonials Page -->
+   <url>
+      <loc>https://www.silverbackrepairs.com/testimonials</loc>
+      <priority>0.7</priority>
    </url>
 
    <!-- Contact Page -->
@@ -17,12 +35,4 @@
       <loc>https://www.silverbackrepairs.com/contact</loc>
       <priority>0.8</priority>
    </url>
-
-   <!-- About Page -->
-   <url>
-      <loc>https://www.silverbackrepairs.com/about</loc>
-      <priority>0.7</priority>
-   </url>
-
-   <!-- Add other pages as you create them -->
 </urlset>
