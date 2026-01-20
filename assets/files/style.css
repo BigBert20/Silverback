@@ -625,6 +625,151 @@ margin: 20px 0px;
   transition: 0.3s;
 }
 
+/* =================== Instant Repair Quote =================== */
+#quote {
+    background: #f0f3f6; /* match other site sections */
+    padding: 80px 20px;
+}
+
+    #quote h2 {
+        font-size: 36px;
+        font-weight: 700;
+        color: var(--primary_color);
+        text-align: center;
+    }
+
+    #quote p {
+        font-size: 18px;
+        color: #666;
+        text-align: center;
+        margin-top: 10px;
+    }
+
+#quote-calculator {
+    max-width: 700px;
+    margin: 40px auto 0;
+    padding: 40px;
+    border-radius: 12px;
+    background: var(--pure-white);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+    border: 1px solid #e0e0e0;
+}
+
+    #quote-calculator .form-group {
+        position: relative;
+        margin-bottom: 20px;
+    }
+
+    #quote-calculator select,
+    #quote-calculator input,
+    #quote-calculator textarea {
+        width: 100%;
+        padding: 12px 16px;
+        border-radius: 6px;
+        border: 1px solid #ccc;
+        font-size: 16px;
+        background: #fdfdfd;
+        transition: 0.2s all ease;
+        font-family: "Poppins", sans-serif;
+    }
+
+        #quote-calculator select:focus,
+        #quote-calculator input:focus,
+        #quote-calculator textarea:focus {
+            outline: none;
+            border-color: var(--primary_color);
+            box-shadow: 0 0 5px rgba(0,0,0,0.1);
+        }
+
+    #quote-calculator label {
+        position: absolute;
+        top: 50%;
+        left: 16px;
+        transform: translateY(-50%);
+        font-size: 15px;
+        font-weight: 500;
+        color: #4b5051;
+        transition: all 0.3s ease;
+        pointer-events: none;
+    }
+
+    #quote-calculator input:focus + label,
+    #quote-calculator textarea:focus + label,
+    #quote-calculator select:focus + label,
+    #quote-calculator input:not(:placeholder-shown) + label,
+    #quote-calculator textarea:not(:placeholder-shown) + label,
+    #quote-calculator select:not(:placeholder-shown) + label {
+        top: 5px;
+        left: 12px;
+        font-size: 13px;
+        color: var(--primary_color);
+        background: #fff;
+        padding: 0 4px;
+    }
+
+#quote-result {
+    margin-top: 20px;
+    padding: 20px;
+    background: var(--pure-white);
+    border-radius: 12px;
+    text-align: center;
+    font-family: "Poppins", sans-serif;
+    font-weight: 700;
+    color: var(--primary_color);
+    border: 1px solid #e0e0e0;
+}
+
+    #quote-result p.price {
+        font-size: 28px; /* bigger price */
+        font-weight: 700;
+        color: var(--pure-black);
+        margin: 0;
+    }
+
+    #quote-result small {
+        font-size: 14px; /* smaller "final price" text */
+        display: block;
+        margin-top: 5px;
+        color: #666;
+    }
+
+#quote-calculator #submitBtn {
+    margin-top: 20px;
+    padding: 14px;
+    width: 100%;
+    background: var(--secondery_color);
+    color: #fff;
+    border: none;
+    font-weight: 700;
+    font-size: 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: 0.3s all ease;
+}
+
+    #quote-calculator #submitBtn:hover {
+        background: #007bbf; /* slightly darker hover */
+    }
+
+    #quote-calculator #submitBtn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
+/* Responsive tweaks */
+@media (max-width: 767px) {
+    #quote-calculator {
+        padding: 25px;
+    }
+
+    #quote h2 {
+        font-size: 28px;
+    }
+
+    #quote p {
+        font-size: 16px;
+    }
+}
 
 
 
