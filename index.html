@@ -566,28 +566,496 @@
     </section>
 
 <!--=================================================== Repair Quote Form section -->
-<section id="quote-form" class="py-5">
+<!-- ================= INSTANT REPAIR QUOTE ================= -->
+<section id="quote" class="py-5">
   <div class="container">
-    <div class="common_title text-center pb-4">
-      <span class="site-title-tagline"><i class="fas fa-external-link-alt"></i> Get a Quote</span>
-      <div class="headline my-2">
-        <h2 class="fw-bold">Request a <span>Repair Quote</span></h2>
-      </div>
-      <p class="text-muted">Fill out the form below to get a fast repair estimate for your device.</p>
+
+    <div id="quote-header">
+      <h2>Instant Repair Quote</h2>
+      <p>Get an instant estimate for your device repair.</p>
     </div>
 
-    <div class="iframe-container" style="max-width: 900px; margin: auto;">
-      <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSdrssJmVindqm_vxCFb3ajqbj_0_TvToYdepSdKWwKGywAI0A/viewform?embedded=true" 
-              width="100%" 
-              height="700" 
-              frameborder="0" 
-              marginheight="0" 
-              marginwidth="0">
-        Loading…
-      </iframe>
+    <div id="quote-calculator">
+      <label>Device Type</label>
+      <select id="device">
+        <option value="">Select Device</option>
+        <option value="iphone">iPhone</option>
+        <option value="samsung">Samsung Galaxy</option>
+        <option value="other">Other Android</option>
+      </select>
+
+      <label>Model</label>
+      <select id="model" disabled></select>
+
+      <label>Issue</label>
+      <select id="issue" disabled></select>
+
+      <input type="text" id="customInput" placeholder="Enter model & issue" style="display:none;">
+
+      <div id="quote-result"></div>
+
+      <form id="quoteForm" action="https://formsubmit.co/a2d9925601d17fb44af9255246abefbc" method="POST">
+        <input type="hidden" name="quote-details" id="quote-details">
+
+        <input type="text" name="name" placeholder="Full Name" required>
+        <input type="email" name="email" placeholder="Email Address" required>
+        <input type="text" name="phone" placeholder="Phone Number" required>
+
+        <textarea name="quote-message" id="quote-message" placeholder="Quote details will appear here" required></textarea>
+
+        <button type="submit" id="submitBtn" disabled>Submit Quote Request</button>
+      </form>
     </div>
   </div>
 </section>
+
+<style>
+#quote-header{text-align:center;margin-bottom:30px}
+#quote-header h2{font-size:38px;font-weight:700;color:#1e1e1e}
+#quote-header p{font-size:18px;color:#666}
+
+#quote-calculator{
+  max-width:700px;
+  margin:auto;
+  background:#fff;
+  padding:30px;
+  border-radius:12px;
+  box-shadow:0 10px 30px rgba(0,0,0,.1)
+}
+#quote-calculator label{font-weight:600;margin-top:15px;display:block}
+#quote-calculator select,
+#quote-calculator input,
+#quote-calculator textarea{
+  width:100%;
+  padding:12px;
+  margin-top:6px;
+  border-radius:6px;
+  border:1px solid #ccc;
+  font-size:16px;
+}
+#quote-calculator select:disabled{background:#f0f0f0}
+#quote-result{
+  margin-top:20px;
+  padding:15px;
+  background:#f4f4f4;
+  border-radius:6px;
+  text-align:center;
+  font-size:20px;
+  font-weight:700;
+}
+#quote-result p { margin: 0; }
+
+#quote-calculator button {
+  margin-top: 15px;
+  padding: 14px;
+  width: 100%;
+  background: #000;
+  color: #fff;
+  border: none;
+  font-weight: 700;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+#quote-calculator button:disabled {
+  opacity: .5;
+  cursor: not-allowed;
+}
+</style>
+
+<script>
+const iphoneModels = [
+  "iPhone 8","iPhone 8 Plus","iPhone X","iPhone XR","iPhone XS","iPhone XS Max",
+  "iPhone 11","iPhone 11 Pro","iPhone 11 Pro Max",
+  "iPhone 12","iPhone 12 mini","iPhone 12 Pro","iPhone 12 Pro Max",
+  "iPhone 13","iPhone 13 mini","iPhone 13 Pro","iPhone 13 Pro Max",
+  "iPhone 14","iPhone 14 Plus","iPhone 14 Pro","iPhone 14 Pro Max",
+  "iPhone 15","iPhone 15 Plus","iPhone 15 Pro","iPhone 15 Pro Max",
+  "iPhone 16","iPhone 16 Plus","iPhone 16 Pro","iPhone 16 Pro Max","iPhone 16e",
+  "iPhone 17","iPhone 17 Pro","iPhone 17 Pro Max","iPhone Air"
+];
+
+const samsungModels = [
+  "Other","S10","S10 Plus","S10 5G",
+  "S20","S20 Plus","S20 Ultra","S20 FE",
+  "S21","S21 Plus","S21 Ultra","S21 FE",
+  "S22","S22 Plus","S22 Ultra",
+  "S23","S23 Plus","S23 Ultra","S23 FE",
+  "S24","S24 Plus","S24 Ultra","S24 FE",
+  "S25","S25 Plus","S25 Ultra","S25 Edge","S25 FE"
+];
+
+const labor = {
+  Screen: 80,
+  Battery: 60,
+  Camera: 75,
+  Port: 70,
+  Speaker: 60
+};
+
+const issues = [
+  "Screen Replacement",
+  "Battery Replacement",
+  "Back Camera Replacement",
+  "Front Camera Replacement",
+  "Charging Port Replacement",
+  "Speaker / Buttons",
+  "Other"
+];
+
+// ---------------- PRICE MAP ----------------
+const issueMap = {};
+
+// iPhone Prices
+issueMap["Screen Replacement"] = {
+  "iPhone 17 Pro Max":215,"iPhone 17 Pro":130,"iPhone 17":215,"iPhone Air":350,
+  "iPhone 16e":65,"iPhone 16 Pro Max":100,"iPhone 16 Pro":115,"iPhone 16 Plus":140,"iPhone 16":136,
+  "iPhone 15 Pro Max":120,"iPhone 15 Pro":135,"iPhone 15 Plus":128,"iPhone 15":110,
+  "iPhone 14 Pro Max":130,"iPhone 14 Pro":130,"iPhone 14 Plus":85,"iPhone 14":80,
+  "iPhone 13 Pro Max":85,"iPhone 13 Pro":85,"iPhone 13":75,"iPhone 13 mini":102,
+  "iPhone 12 Pro Max":85,"iPhone 12 Pro":80,"iPhone 12":80,"iPhone 12 mini":80,
+  "iPhone 11 Pro Max":80,"iPhone 11 Pro":80,"iPhone 11":45,
+  "iPhone XS Max":60,"iPhone XS":60,"iPhone XR":60,"iPhone X":60,
+  "iPhone 8":40,"iPhone 8 Plus":40,"iPhone SE 2020":40,"iPhone SE 2022":40,
+  "iPhone 7":40,"iPhone 7 Plus":40,"iPhone 6":40,"iPhone 6 Plus":40,"iPhone 6S":40,"iPhone 6s Plus":40,
+  "iPhone 5S":40,"iPhone SE 2016":40,"iPhone 5C":40,"iPhone 5":40,"iPhone 4S":40,"iPhone 4":40
+};
+
+issueMap["Battery Replacement"] = {
+  "iPhone 17 Pro Max":125,"iPhone 17 Pro":125,"iPhone 17":115,"iPhone Air":125,
+  "iPhone 16e":85,"iPhone 16 Pro Max":85,"iPhone 16 Pro":85,"iPhone 16 Plus":85,"iPhone 16":85,
+  "iPhone 15 Pro Max":85,"iPhone 15 Pro":85,"iPhone 15":85,"iPhone 14 Pro Max":85,"iPhone 14 Pro":85,
+  "iPhone 14 Plus":85,"iPhone 14":85,"iPhone 13 Pro Max":80,"iPhone 13 Pro":80,"iPhone 13":80,"iPhone 13 mini":80,
+  "iPhone 12 Pro Max":80,"iPhone 12 Pro":80,"iPhone 12":80,"iPhone 12 mini":80,"iPhone 11 Pro Max":45,"iPhone 11 Pro":40,"iPhone 11":40,
+  "iPhone XS Max":40,"iPhone XS":40,"iPhone XR":40,"iPhone X":40,
+  "iPhone 8":40,"iPhone 8 Plus":40,"iPhone SE 2020":40,"iPhone SE 2022":40,
+  "iPhone 7":40,"iPhone 7 Plus":40,"iPhone 6":40,"iPhone 6 Plus":40,"iPhone 6S":40,"iPhone 6s Plus":40,
+  "iPhone 5S":40,"iPhone SE 2016":40,"iPhone 5C":40,"iPhone 5":40,"iPhone 4S":40,"iPhone 4":40
+};
+
+// Back Camera Replacement
+issueMap["Back Camera Replacement"] = {
+  "iPhone 17 Pro Max":[125,180],"iPhone 17 Pro":[125,180],"iPhone 17":[85,125],"iPhone Air":[125,180],
+  "iPhone 16 Pro Max":[85,125],"iPhone 16 Pro":[85,125],"iPhone 16":[70,115],"iPhone 16 Plus":[70,115],
+  "iPhone 15 Pro Max":[70,115],"iPhone 15 Pro":[70,115],"iPhone 15 Plus":[70,115],"iPhone 15":[70,115],
+  "iPhone 14 Pro Max":[70,115],"iPhone 14 Pro":[70,115],"iPhone 14 Plus":[70,115],"iPhone 14":[70,115],
+  "iPhone 13 Pro Max":[70,115],"iPhone 13 Pro":[70,115],"iPhone 13":[70,115],"iPhone 13 mini":[70,115],
+  "iPhone 12 Pro Max":[70,115],"iPhone 12 Pro":[70,115],"iPhone 12":[70,115],"iPhone 12 mini":[70,115],
+  "iPhone 11 Pro Max":[70,115],"iPhone 11 Pro":[70,115],"iPhone 11":[70,115],
+  "iPhone XS Max":[70,115],"iPhone XS":[70,115],"iPhone XR":[70,115],"iPhone X":[70,115],
+  "iPhone 8":[50,110],"iPhone 8 Plus":[50,110],"iPhone 7":[50,110],"iPhone 7 Plus":[50,110],
+  "iPhone 6":[50,110],"iPhone 6 Plus":[50,110],"iPhone 6S":[50,110],"iPhone 6s Plus":[50,110],
+  "iPhone 5S":[50,110],"iPhone SE 2016":[50,110],"iPhone 5C":[50,110],"iPhone 5":[50,110],"iPhone 4S":[50,110],"iPhone 4":[50,110]
+};
+
+// Front Camera Replacment
+issueMap["Front Camera Replacement"] = {
+  "iPhone 17 Pro Max":[125,180],"iPhone 17 Pro":[125,180],"iPhone 17":[85,125],"iPhone Air":[125,180],
+  "iPhone 16 Pro Max":[85,125],"iPhone 16 Pro":[85,125],"iPhone 16":[70,115],"iPhone 16 Plus":[70,115],
+  "iPhone 15 Pro Max":[70,115],"iPhone 15 Pro":[70,115],"iPhone 15 Plus":[70,115],"iPhone 15":[70,115],
+  "iPhone 14 Pro Max":[70,115],"iPhone 14 Pro":[70,115],"iPhone 14 Plus":[70,115],"iPhone 14":[70,115],
+  "iPhone 13 Pro Max":[70,115],"iPhone 13 Pro":[70,115],"iPhone 13":[70,115],"iPhone 13 mini":[70,115],
+  "iPhone 12 Pro Max":[70,115],"iPhone 12 Pro":[70,115],"iPhone 12":[70,115],"iPhone 12 mini":[70,115],
+  "iPhone 11 Pro Max":[70,115],"iPhone 11 Pro":[70,115],"iPhone 11":[70,115],
+  "iPhone XS Max":[70,115],"iPhone XS":[70,115],"iPhone XR":[70,115],"iPhone X":[70,115],
+  "iPhone 8":[50,110],"iPhone 8 Plus":[50,110],"iPhone 7":[50,110],"iPhone 7 Plus":[50,110],
+  "iPhone 6":[50,110],"iPhone 6 Plus":[50,110],"iPhone 6S":[50,110],"iPhone 6s Plus":[50,110],
+  "iPhone 5S":[50,110],"iPhone SE 2016":[50,110],"iPhone 5C":[50,110],"iPhone 5":[50,110],"iPhone 4S":[50,110],"iPhone 4":[50,110]
+};
+
+// Charging Port Replacement
+issueMap["Charging Port Replacement"] = {
+  "iPhone Air":[75,100],"iPhone 17 Pro Max":[85,110],"iPhone 17 Pro":[90,115],"iPhone 17":[60,85],"iPhone 16e":[60,85],
+  "iPhone 16 Pro Max":[87,110],"iPhone 16 Pro":[87,110],"iPhone 16 Plus":[90,115],"iPhone 16":[90,115],
+  "iPhone 15 Pro Max":[50,70],"iPhone 15 Pro":[50,70],"iPhone 15 Plus":[50,70],"iPhone 15":[50,70],
+  "iPhone 14 Pro Max":[50,70],"iPhone 14 Pro":[50,70],"iPhone 14 Plus":[50,70],"iPhone 14":[50,70],
+  "iPhone 13 Pro Max":[50,70],"iPhone 13 Pro":[50,70],"iPhone 13":[50,70],"iPhone 13 mini":[50,70],
+  "iPhone 12 Pro Max":[50,70],"iPhone 12 Pro":[50,70],"iPhone 12 Plus":[50,70],"iPhone 12":[50,70],"iPhone 12 mini":[50,70],
+  "iPhone 11 Pro Max":[50,70],"iPhone 11 Pro":[50,70],"iPhone 11":[50,70],
+  "iPhone XS Max":[50,70],"iPhone XS":[50,70],"iPhone XR":[50,70],"iPhone X":[50,70],
+  "iPhone 8":[50,70],"iPhone 8 Plus":[50,70],"iPhone 7":[50,70],"iPhone 7 Plus":[50,70],
+  "iPhone 6":[50,70],"iPhone 6 Plus":[50,70],"iPhone 6S":[50,70],"iPhone 6s Plus":[50,70],
+  "iPhone 5S":[50,70],"iPhone SE 2016":[50,70],"iPhone 5C":[50,70],"iPhone 5":[50,70],"iPhone 4S":[50,70],"iPhone 4":[50,70]
+};
+
+// Speaker Replacement
+issueMap["Speaker / Buttons"] = {
+  "iPhone Air":[40,85],"iPhone 17 Pro Max":[40,85],"iPhone 17 Pro":[40,85],"iPhone 17":[40,85],
+  "iPhone 16e":[40,85],"iPhone 16 Pro Max":[40,85],"iPhone 16 Pro":[40,85],"iPhone 16 Plus":[40,85],"iPhone 16":[40,85],
+  "iPhone 15 Pro Max":[40,85],"iPhone 15 Pro":[40,85],"iPhone 15 Plus":[40,85],"iPhone 15":[40,85],
+  "iPhone 14 Pro Max":[40,85],"iPhone 14 Pro":[40,85],"iPhone 14 Plus":[40,85],"iPhone 14":[40,85],
+  "iPhone 13 Pro Max":[40,85],"iPhone 13 Pro":[40,85],"iPhone 13":[40,85],"iPhone 13 mini":[40,85],
+  "iPhone 12 Pro Max":[40,85],"iPhone 12 Pro":[40,85],"iPhone 12 Plus":[40,85],"iPhone 12":[40,85],"iPhone 12 mini":[40,85],
+  "iPhone 11 Pro Max":[40,85],"iPhone 11 Pro":[40,85],"iPhone 11":[40,85],
+  "iPhone XS Max":[40,85],"iPhone XS":[40,85],"iPhone XR":[40,85],"iPhone X":[40,85],
+  "iPhone 8":[40,85],"iPhone 8 Plus":[40,85],"iPhone 7":[40,85],"iPhone 7 Plus":[40,85],
+  "iPhone 6":[40,85],"iPhone 6 Plus":[40,85],"iPhone 6S":[40,85],"iPhone 6s Plus":[40,85],
+  "iPhone 5S":[40,85],"iPhone SE 2016":[40,85],"iPhone 5C":[40,85],"iPhone 5":[40,85],"iPhone 4S":[40,85],"iPhone 4":[40,85]
+};
+
+// ---------------- SAMSUNG ----------------
+// Screen
+issueMap["Screen Replacement"]["S25 FE"]=[86,110];
+issueMap["Screen Replacement"]["S25 Edge"]=[180,200];
+issueMap["Screen Replacement"]["S25 Ultra"]=[202,220];
+issueMap["Screen Replacement"]["S25 Plus"]=[160,185];
+issueMap["Screen Replacement"]["S25"]=[120,145];
+issueMap["Screen Replacement"]["S24 FE"]=[85,105];
+issueMap["Screen Replacement"]["S24 Ultra"]=[200,235];
+issueMap["Screen Replacement"]["S24 Plus"]=[170,200];
+issueMap["Screen Replacement"]["S24"]=[135,150];
+issueMap["Screen Replacement"]["S23 FE"]=[86,110];
+issueMap["Screen Replacement"]["S23 Ultra"]=[136,240];
+issueMap["Screen Replacement"]["S23 Plus"]=[124,145];
+issueMap["Screen Replacement"]["S23"]=[145,155];
+issueMap["Screen Replacement"]["S22 Ultra"]=[136,240];
+issueMap["Screen Replacement"]["S22 Plus"]=[136,240];
+issueMap["Screen Replacement"]["S22"]=[135,150];
+issueMap["Screen Replacement"]["S21 FE"]=[135,150];
+issueMap["Screen Replacement"]["S21 Ultra"]=[145,155];
+issueMap["Screen Replacement"]["S21 Plus"]=[124,145];
+issueMap["Screen Replacement"]["S21"]=[124,145];
+issueMap["Screen Replacement"]["S20 FE"]=[86,110];
+issueMap["Screen Replacement"]["S20 Ultra"]=[124,145];
+issueMap["Screen Replacement"]["S20 Plus"]=[145,155];
+issueMap["Screen Replacement"]["S20"]=[124,155];
+issueMap["Screen Replacement"]["S10 Lite"]=[124,145];
+issueMap["Screen Replacement"]["S10 5G"]=[124,145];
+issueMap["Screen Replacement"]["S10 Plus"]=[145,155];
+issueMap["Screen Replacement"]["S10"]=[124,145];
+
+// Battery
+issueMap["Battery Replacement"]["S25 FE"]=[25,55];
+issueMap["Battery Replacement"]["S25 Edge"]=[25,55];
+issueMap["Battery Replacement"]["S25 Ultra"]=[25,55];
+issueMap["Battery Replacement"]["S25 Plus"]=[25,55];
+issueMap["Battery Replacement"]["S25"]=[25,55];
+issueMap["Battery Replacement"]["S24 FE"]=[25,55];
+issueMap["Battery Replacement"]["S24 Ultra"]=[25,55];
+issueMap["Battery Replacement"]["S24 Plus"]=[25,55];
+issueMap["Battery Replacement"]["S24"]=[25,55];
+issueMap["Battery Replacement"]["S23 FE"]=[25,55];
+issueMap["Battery Replacement"]["S23 Ultra"]=[25,55];
+issueMap["Battery Replacement"]["S23 Plus"]=[25,55];
+issueMap["Battery Replacement"]["S23"]=[25,55];
+issueMap["Battery Replacement"]["S22 Ultra"]=[25,55];
+issueMap["Battery Replacement"]["S22 Plus"]=[25,55];
+issueMap["Battery Replacement"]["S22"]=[25,55];
+issueMap["Battery Replacement"]["S21 FE"]=[25,55];
+issueMap["Battery Replacement"]["S21 Ultra"]=[25,55];
+issueMap["Battery Replacement"]["S21 Plus"]=[25,55];
+issueMap["Battery Replacement"]["S21"]=[25,55];
+issueMap["Battery Replacement"]["S20 FE"]=[25,55];
+issueMap["Battery Replacement"]["S20 Ultra"]=[25,55];
+issueMap["Battery Replacement"]["S20 Plus"]=[25,55];
+issueMap["Battery Replacement"]["S20"]=[25,55];
+issueMap["Battery Replacement"]["S10 Lite"]=[25,55];
+issueMap["Battery Replacement"]["S10 5G"]=[25,55];
+issueMap["Battery Replacement"]["S10 Plus"]=[25,55];
+issueMap["Battery Replacement"]["S10"]=[25,55];
+
+// Back Camera
+issueMap["Back Camera Replacement"]["S25 FE"]=[110,125];
+issueMap["Back Camera Replacement"]["S25 Edge"]=[110,125];
+issueMap["Back Camera Replacement"]["S25 Ultra"]=[110,125];
+issueMap["Back Camera Replacement"]["S25 Plus"]=[85,110];
+issueMap["Back Camera Replacement"]["S25"]=[85,110];
+issueMap["Back Camera Replacement"]["S24 FE"]=[110,125];
+issueMap["Back Camera Replacement"]["S24 Ultra"]=[110,125];
+issueMap["Back Camera Replacement"]["S24 Plus"]=[110,125];
+issueMap["Back Camera Replacement"]["S24"]=[85,110];
+issueMap["Back Camera Replacement"]["S23 FE"]=[85,110];
+issueMap["Back Camera Replacement"]["S23 Ultra"]=[110,125];
+issueMap["Back Camera Replacement"]["S23 Plus"]=[110,125];
+issueMap["Back Camera Replacement"]["S23"]=[110,125];
+issueMap["Back Camera Replacement"]["S22 Ultra"]=[110,125];
+issueMap["Back Camera Replacement"]["S22 Plus"]=[85,110];
+issueMap["Back Camera Replacement"]["S22"]=[110,125];
+issueMap["Back Camera Replacement"]["S21 FE"]=[85,110];
+issueMap["Back Camera Replacement"]["S21 Ultra"]=[110,125];
+issueMap["Back Camera Replacement"]["S21 Plus"]=[110,125];
+issueMap["Back Camera Replacement"]["S21"]=[110,125];
+issueMap["Back Camera Replacement"]["S20 FE"]=[85,110];
+issueMap["Back Camera Replacement"]["S20 Ultra"]=[85,110];
+issueMap["Back Camera Replacement"]["S20 Plus"]=[110,125];
+issueMap["Back Camera Replacement"]["S20"]=[110,125];
+issueMap["Back Camera Replacement"]["S10 Lite"]=[110,125];
+issueMap["Back Camera Replacement"]["S10 5G"]=[85,110];
+issueMap["Back Camera Replacement"]["S10 Plus"]=[85,110];
+issueMap["Back Camera Replacement"]["S10"]=[110,125];
+// ... Repeat similar for all Samsung front camera, port, speaker replacements using your full price list
+
+// Front Camera (same as back)
+Object.assign(
+issueMap["Front Camera Replacement"] = JSON.parse(JSON.stringify(issueMap["Back Camera Replacement"]))
+);
+
+// Charging Port Replacement (example values, adjust if you have full list)
+issueMap["Charging Port Replacement"]["S25 FE"]=[40,80];
+issueMap["Charging Port Replacement"]["S25 Edge"]=[40,80];
+issueMap["Charging Port Replacement"]["S25 Ultra"]=[40,80];
+issueMap["Charging Port Replacement"]["S25 Plus"]=[40,80];
+issueMap["Charging Port Replacement"]["S25"]=[40,80];
+issueMap["Charging Port Replacement"]["S24 FE"]=[40,80];
+issueMap["Charging Port Replacement"]["S24 Ultra"]=[40,80];
+issueMap["Charging Port Replacement"]["S24 Plus"]=[40,80];
+issueMap["Charging Port Replacement"]["S24"]=[40,80];
+issueMap["Charging Port Replacement"]["S23 FE"]=[40,80];
+issueMap["Charging Port Replacement"]["S23 Ultra"]=[40,80];
+issueMap["Charging Port Replacement"]["S23 Plus"]=[40,80];
+issueMap["Charging Port Replacement"]["S23"]=[40,80];
+issueMap["Charging Port Replacement"]["S22 Ultra"]=[40,80];
+issueMap["Charging Port Replacement"]["S22 Plus"]=[40,80];
+issueMap["Charging Port Replacement"]["S22"]=[40,80];
+issueMap["Charging Port Replacement"]["S21 FE"]=[40,80];
+issueMap["Charging Port Replacement"]["S21 Ultra"]=[40,80];
+issueMap["Charging Port Replacement"]["S21 Plus"]=[40,80];
+issueMap["Charging Port Replacement"]["S21"]=[40,80];
+issueMap["Charging Port Replacement"]["S20 FE"]=[40,80];
+issueMap["Charging Port Replacement"]["S20 Ultra"]=[40,80];
+issueMap["Charging Port Replacement"]["S20 Plus"]=[40,80];
+issueMap["Charging Port Replacement"]["S20"]=[40,80];
+issueMap["Charging Port Replacement"]["S10 Lite"]=[40,80];
+issueMap["Charging Port Replacement"]["S10 5G"]=[40,80];
+issueMap["Charging Port Replacement"]["S10 Plus"]=[40,80];
+issueMap["Charging Port Replacement"]["S10"]=[40,80];
+
+// Speaker Replacement (example values)
+issueMap["Speaker / Buttons"]["S25 FE"]=[40,70];
+issueMap["Speaker / Buttons"]["S25 Edge"]=[40,70];
+issueMap["Speaker / Buttons"]["S25 Ultra"]=[40,70];
+
+// --------------- CALCULATOR LOGIC -----------------
+const device = document.getElementById("device");
+const model = document.getElementById("model");
+const issue = document.getElementById("issue");
+const custom = document.getElementById("customInput");
+const result = document.getElementById("quote-result");
+const message = document.getElementById("quote-message");
+const details = document.getElementById("quote-details");
+const submitBtn = document.getElementById("submitBtn");
+custom.addEventListener("input", updateOtherMessage);
+
+device.onchange = () => {
+  model.innerHTML = "";
+  issue.innerHTML = "";
+  result.innerHTML = "";
+  submitBtn.disabled = true;
+  custom.style.display = "none";
+
+  if (device.value === "iphone") populate(model, iphoneModels);
+  else if (device.value === "samsung") populate(model, samsungModels);
+  else if (device.value === "other") {
+    model.disabled = true;
+    issue.disabled = true;
+    custom.style.display = "block";
+    result.innerHTML = "<p>Please describe your device and issue. Price will be provided after review.</p>";
+    submitBtn.disabled = false;
+  }
+};
+
+model.onchange = () => {
+  // Decide issues list based on device type
+  let issueList = issues;
+  if (device.value === "samsung") {
+    // Remove Speaker/Buttons for Samsung
+    issueList = issues.filter(i => i !== "Speaker / Buttons");
+  }
+  populate(issue, issueList);
+};
+
+function getLaborForIssue(issue) {
+  if (issue.includes("Screen")) return labor.Screen;
+  if (issue.includes("Battery")) return labor.Battery;
+  if (issue.includes("Camera")) return labor.Camera;
+  if (issue.includes("Port")) return labor.Port;
+  return labor.Speaker;
+}
+
+issue.onchange = () => {
+  if (handleOther()) return;
+
+  const modelValue = model.value;
+  const issueValue = issue.value;
+
+  const partPrice = issueMap[issueValue]?.[modelValue];
+
+  if (!partPrice) {
+    result.innerHTML = "<p>Price not available for this device/issue.</p>";
+    submitBtn.disabled = true;
+    return;
+  }
+
+  const laborCost = getLaborForIssue(issueValue);
+
+  let min, max;
+
+  if (Array.isArray(partPrice)) {
+    min = partPrice[0] + laborCost;
+    max = partPrice[1] + laborCost;
+  } else {
+    min = max = partPrice + laborCost;
+  }
+
+let priceText = min === max ? `$${min}` : `$${min} – $${max}`;
+
+result.innerHTML = `
+  <p class="price">${priceText}</p>
+    <small>Final price confirmed after diagnostic. We attempt to use the highest quality parts. Please ask if there is a cheaper alternative in the quote details. </small>
+  `;
+
+  const text = `Device: ${device.value}
+Model: ${modelValue}
+Issue: ${issueValue}
+Estimated Price: ${priceText}`;
+
+  message.value = text;
+  details.value = text;
+  submitBtn.disabled = false;
+};
+
+function populate(select, list) {
+  select.innerHTML = `<option value="">Select</option>`;
+  list.forEach(v => {
+    const o = document.createElement("option");
+    o.value = v;
+    o.textContent = v;
+    select.appendChild(o);
+  });
+  select.disabled = false;
+}
+
+function handleOther() {
+  if (device.value === "other" || model.value === "Other" || issue.value === "Other") {
+    custom.style.display = "block";
+    result.innerHTML = "<p>Please describe your device and issue. Price will be provided after review.</p>";
+
+    // Update the message box immediately
+    updateOtherMessage();
+
+    return true;
+  }
+
+  // Hide the input if not "Other"
+  custom.style.display = "none";
+  return false;
+}
+
+// This updates the message dynamically as the user types
+function updateOtherMessage() {
+  const text = `Device: ${device.value}
+Model: ${model.value}
+Issue: ${issue.value}
+Notes: ${custom.value || " "}`;
+
+  message.value = text;
+  details.value = text;
+
+  // Only enable submit if user typed something
+  submitBtn.disabled = custom.value.trim() === "";
+}
+</script>
+
 
 
 <footer class="bg-dark text-white p-4 text-center">
