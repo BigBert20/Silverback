@@ -577,6 +577,7 @@
     </div>
 
     <div id="quote-calculator">
+
       <label>Device Type</label>
       <select id="device">
         <option value="">Select Device</option>
@@ -591,21 +592,74 @@
       <label>Issue</label>
       <select id="issue" disabled></select>
 
-      <input type="text" id="customInput" placeholder="Enter model & issue" style="display:none;">
+      <input 
+        type="text" 
+        id="customInput" 
+        placeholder="Enter model & issue" 
+        style="display:none;"
+      >
 
       <div id="quote-result"></div>
 
-      <form id="quoteForm" action="https://formsubmit.co/a2d9925601d17fb44af9255246abefbc" method="POST">
-        <input type="hidden" name="quote-details" id="quote-details">
+      <!-- FORM -->
+      <form id="quoteForm" action="https://formspree.io/f/mqejegdr" method="POST">
 
-        <input type="text" name="name" placeholder="Full Name" required>
-        <input type="email" name="email" placeholder="Email Address" required>
-        <input type="text" name="phone" placeholder="Phone Number" required>
+        <!-- Hidden Fields -->
+        <input 
+          type="hidden" 
+          name="_subject" 
+          value="New Silverback Repair Quote Request"
+        >
 
-        <textarea name="quote-message" id="quote-message" placeholder="Quote details will appear here" required></textarea>
+        <input 
+          type="hidden" 
+          name="_captcha" 
+          value="false"
+        >
 
-        <button type="submit" id="submitBtn" disabled>Submit Quote Request</button>
+        <input 
+          type="hidden" 
+          name="quote-details" 
+          id="quote-details"
+        >
+
+        <!-- Customer Info -->
+        <input 
+          type="text" 
+          name="name" 
+          placeholder="Full Name" 
+          required
+        >
+
+        <input 
+          type="email" 
+          name="email" 
+          placeholder="Email Address" 
+          required
+        >
+
+        <input 
+          type="text" 
+          name="phone" 
+          placeholder="Phone Number" 
+          required
+        >
+
+        <!-- Quote Message -->
+        <textarea 
+          name="quote-message" 
+          id="quote-message" 
+          placeholder="Quote details will appear here" 
+          required>
+        </textarea>
+
+        <!-- Submit -->
+        <button type="submit" id="submitBtn" disabled>
+          Submit Quote Request
+        </button>
+
       </form>
+
     </div>
   </div>
 </section>
