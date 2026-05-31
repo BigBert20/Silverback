@@ -85,7 +85,7 @@ section{padding:92px 0}
 .burger span{width:26px;height:2.5px;background:var(--ink);border-radius:2px;transition:.3s}
 .hero{position:relative;min-height:100vh;display:flex;align-items:center;padding:120px 0 70px;background:var(--black);color:var(--white);overflow:hidden}
 .hero::before{content:"";position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px);background-size:54px 54px;mask-image:radial-gradient(circle at 70% 40%,black,transparent 78%)}
-.hero::after{content:"";position:absolute;width:680px;height:680px;right:-160px;top:50%;transform:translateY(-50%);background:url('assets/images/circle_mark.png') center/contain no-repeat;opacity:.05;filter:invert(1)}
+.hero::after{content:"";position:absolute;width:680px;height:680px;right:-160px;top:50%;transform:translateY(-50%);background:url('assets/images/gorilla_glyph.png') center/contain no-repeat;opacity:.06}
 .hero-grid{position:relative;display:grid;grid-template-columns:1.12fr .88fr;gap:54px;align-items:center}
 .hero-badge{display:inline-flex;align-items:center;gap:9px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.16);color:var(--silver-lt);padding:8px 16px;font-family:'Chakra Petch';font-weight:600;font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;clip-path:polygon(7px 0,100% 0,100% calc(100% - 7px),calc(100% - 7px) 100%,0 100%,0 7px);margin-bottom:26px}
 .hero h1{font-size:clamp(2.6rem,5.6vw,4.6rem);font-weight:700;margin-bottom:20px}
@@ -309,7 +309,7 @@ section{padding:92px 0}
     </div>
     <div class="about-media reveal">
       <div class="glow"></div>
-      <img src="assets/images/circle_mark.png" alt="Silverback gorilla mark" style="filter:invert(1) drop-shadow(0 20px 40px rgba(0,0,0,.5))" onerror="this.onerror=null;this.src='assets/images/favicon.png';this.onerror=function(){this.closest('.about-media').style.display='none'}">
+      <img src="assets/images/gorilla_glyph.png" alt="Silverback gorilla mark" style="filter:drop-shadow(0 20px 40px rgba(0,0,0,.5))" onerror="this.onerror=null;this.src='assets/images/circle_mark.png';this.onerror=function(){this.closest('.about-media').style.display='none'}">
     </div>
   </div>
 </section>
