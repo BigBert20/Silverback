@@ -52,7 +52,7 @@
   --maxw:1180px;
 }
 *{margin:0;padding:0;box-sizing:border-box}
-html{scroll-behavior:smooth;scroll-padding-top:80px}
+html{scroll-behavior:smooth;scroll-padding-top:90px}
 body{font-family:'Inter',system-ui,sans-serif;color:var(--ink);background:var(--paper);line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
 h1,h2,h3,h4{font-family:'Chakra Petch',sans-serif;line-height:1.05;letter-spacing:-.01em;text-transform:uppercase}
 a{text-decoration:none;color:inherit}
@@ -74,8 +74,8 @@ section{padding:92px 0}
 .btn-outline{background:transparent;color:var(--white);border:1.5px solid rgba(255,255,255,.35)}
 .btn-outline:hover{border-color:var(--white);background:rgba(255,255,255,.08)}
 .header{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(251,251,252,.82);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
-.nav{display:flex;align-items:center;justify-content:space-between;height:74px}
-.logo img{height:40px;width:auto}
+.nav{display:flex;align-items:center;justify-content:space-between;height:84px}
+.logo img{height:52px;width:auto}
 .nav-links{display:flex;align-items:center;gap:30px;list-style:none}
 .nav-links a{color:var(--steel);font-size:.92rem;font-weight:600;transition:color .2s}
 .nav-links a:hover{color:var(--ink)}
@@ -205,7 +205,7 @@ section{padding:92px 0}
 }
 @media(max-width:680px){
   section{padding:64px 0}
-  .nav-links{position:fixed;top:74px;right:0;width:80%;max-width:330px;height:calc(100vh - 74px);background:var(--white);flex-direction:column;align-items:flex-start;gap:0;padding:24px;transform:translateX(110%);transition:transform .35s;border-left:1px solid var(--line);box-shadow:var(--shadow)}
+  .nav-links{position:fixed;top:84px;right:0;width:80%;max-width:330px;height:calc(100vh - 84px);background:var(--white);flex-direction:column;align-items:flex-start;gap:0;padding:24px;transform:translateX(110%);transition:transform .35s;border-left:1px solid var(--line);box-shadow:var(--shadow)}
   .nav-links.open{transform:translateX(0)}
   .nav-links li{width:100%;border-bottom:1px solid var(--line)}
   .nav-links a{display:block;padding:16px 0;width:100%}
@@ -309,7 +309,7 @@ section{padding:92px 0}
     </div>
     <div class="about-media reveal">
       <div class="glow"></div>
-      <img src="assets/images/circle_mark.png" alt="Silverback gorilla mark" style="filter:invert(1) drop-shadow(0 20px 40px rgba(0,0,0,.5))">
+      <img src="assets/images/circle_mark.png" alt="Silverback gorilla mark" style="filter:invert(1) drop-shadow(0 20px 40px rgba(0,0,0,.5))" onerror="this.onerror=null;this.src='assets/images/favicon.png';this.onerror=function(){this.closest('.about-media').style.display='none'}">
     </div>
   </div>
 </section>
