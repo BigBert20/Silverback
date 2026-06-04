@@ -339,11 +339,15 @@ section{padding:84px 0}
           <option value="samsung">Samsung Galaxy</option>
           <option value="other">Something else (laptop, console, board, etc.)</option>
         </select>
-        <div class="field-row">
+        <div class="field-row" id="model-issue-row">
           <div><label for="model">Model</label><select id="model" disabled><option>Select device first</option></select></div>
           <div><label for="issue">Issue</label><select id="issue" disabled><option>Select model first</option></select></div>
         </div>
-        <input type="text" id="customInput" placeholder="Describe your device and what's wrong…" style="display:none;margin-top:8px;">
+        <div class="field-row" id="other-fields" style="display:none">
+          <div><label for="otherModel">Device &amp; Model</label><input type="text" id="otherModel" placeholder="e.g. PSP 3001, Nintendo Switch…"></div>
+          <div><label for="otherIssue">Issue</label><input type="text" id="otherIssue" placeholder="e.g. joystick broken, won't turn on…"></div>
+        </div>
+        <input type="text" id="customInput" placeholder="Additional notes (optional)…" style="display:none;margin-top:8px;">
         <div id="quote-result"></div>
         <form id="quoteForm" class="qform" action="https://formspree.io/f/mqejegdr" method="POST">
           <input type="hidden" name="_subject" value="New Repair Quote Request — Silverback">
@@ -433,14 +437,28 @@ const sCam={"S25 FE":[110,125],"S25 Edge":[110,125],"S25 Ultra":[110,125],"S25 P
 Object.assign(issueMap["Back Camera Replacement"],sCam);Object.assign(issueMap["Front Camera Replacement"],sCam);
 const sPort={};samsungModels.forEach(m=>{if(m!=="Other / not listed")sPort[m]=[40,80];});Object.assign(issueMap["Charging Port Replacement"],sPort);
 const device=document.getElementById("device"),model=document.getElementById("model"),issue=document.getElementById("issue"),custom=document.getElementById("customInput"),result=document.getElementById("quote-result"),message=document.getElementById("quote-message"),details=document.getElementById("quote-details"),submitBtn=document.getElementById("submitBtn");
+const modelIssueRow=document.getElementById("model-issue-row"),otherFields=document.getElementById("other-fields"),otherModel=document.getElementById("otherModel"),otherIssue=document.getElementById("otherIssue");
 function showResult(html){result.innerHTML=html;result.classList.add("show");}
-function syncMessage(){const text=`Device: ${device.value||"(not selected)"}\nModel: ${model.value||custom.value||"(see notes)"}\nIssue: ${issue.value||"(see notes)"}\nNotes: ${custom.value||"-"}`;message.value=text;details.value=text;}
+function syncMessage(){
+  let text;
+  if(device.value==="other"){
+    text=`Device: other\nModel: ${otherModel.value||"(not specified)"}\nIssue: ${otherIssue.value||"(not specified)"}\nNotes: ${custom.value||"-"}`;
+  } else {
+    text=`Device: ${device.value||"(not selected)"}\nModel: ${model.value||custom.value||"(see notes)"}\nIssue: ${issue.value||"(see notes)"}\nNotes: ${custom.value||"-"}`;
+  }
+  message.value=text;details.value=text;
+}
 custom.addEventListener("input",()=>{syncMessage();});
+otherModel.addEventListener("input",()=>{syncMessage();});
+otherIssue.addEventListener("input",()=>{syncMessage();});
 device.onchange=()=>{
-  model.innerHTML="";issue.innerHTML="";result.classList.remove("show");result.innerHTML="";custom.style.display="none";custom.value="";
+  model.innerHTML="";issue.innerHTML="";result.classList.remove("show");result.innerHTML="";
+  custom.style.display="none";custom.value="";custom.placeholder="Additional notes (optional)…";
+  otherFields.style.display="none";otherModel.value="";otherIssue.value="";
+  modelIssueRow.style.display="";
   if(device.value==="iphone"){populate(model,iphoneModels);issue.disabled=true;issue.innerHTML="<option>Select model first</option>";}
   else if(device.value==="samsung"){populate(model,samsungModels);issue.disabled=true;issue.innerHTML="<option>Select model first</option>";}
-  else if(device.value==="other"){model.disabled=true;model.innerHTML="<option>Describe below</option>";issue.disabled=true;issue.innerHTML="<option>Describe below</option>";custom.style.display="block";showResult("<p style='margin:0'>Tell us what you've got below — we'll review and send a custom quote with your shipping label.</p>");}
+  else if(device.value==="other"){modelIssueRow.style.display="none";otherFields.style.display="";showResult("<p style='margin:0'>Tell us what you've got below — we'll review and send a custom quote with your shipping label.</p>");}
   syncMessage();
 };
 model.onchange=()=>{
