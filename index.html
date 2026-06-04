@@ -347,18 +347,18 @@ section{padding:84px 0}
           <div><label for="otherModel">Device &amp; Model</label><input type="text" id="otherModel" placeholder="e.g. PSP 3001, Nintendo Switch…"></div>
           <div><label for="otherIssue">Issue</label><input type="text" id="otherIssue" placeholder="e.g. joystick broken, won't turn on…"></div>
         </div>
-        <input type="text" id="customInput" placeholder="Additional notes (optional)…" style="display:none;margin-top:8px;">
         <div id="quote-result"></div>
         <form id="quoteForm" class="qform" action="https://formspree.io/f/mqejegdr" method="POST">
           <input type="hidden" name="_subject" value="New Repair Quote Request — Silverback">
           <input type="hidden" name="form-type" value="QUOTE REQUEST">
           <input type="hidden" name="quote-details" id="quote-details">
+          <input type="hidden" name="quote-message" id="quote-message">
           <div class="field-row">
             <input type="text" name="name" placeholder="Full Name" required>
             <input type="text" name="phone" placeholder="Phone Number" required>
           </div>
           <input type="email" name="email" placeholder="Email Address" required>
-          <textarea name="quote-message" id="quote-message" rows="3" placeholder="Your selection appears here — add any notes (e.g. ask about a cheaper part)" required></textarea>
+          <textarea name="notes" id="notesInput" rows="3" placeholder="Anything else we should know? (optional)"></textarea>
           <button type="submit" id="submitBtn">Request My Repair &amp; Shipping Label</button>
         </form>
       </div>
@@ -436,48 +436,47 @@ const sBatt={};samsungModels.forEach(m=>{if(m!=="Other / not listed")sBatt[m]=[2
 const sCam={"S25 FE":[110,125],"S25 Edge":[110,125],"S25 Ultra":[110,125],"S25 Plus":[85,110],"S25":[85,110],"S24 FE":[110,125],"S24 Ultra":[110,125],"S24 Plus":[110,125],"S24":[85,110],"S23 FE":[85,110],"S23 Ultra":[110,125],"S23 Plus":[110,125],"S23":[110,125],"S22 Ultra":[110,125],"S22 Plus":[85,110],"S22":[110,125],"S21 FE":[85,110],"S21 Ultra":[110,125],"S21 Plus":[110,125],"S21":[110,125],"S20 FE":[85,110],"S20 Ultra":[85,110],"S20 Plus":[110,125],"S20":[110,125],"S10 5G":[85,110],"S10 Plus":[85,110],"S10":[110,125]};
 Object.assign(issueMap["Back Camera Replacement"],sCam);Object.assign(issueMap["Front Camera Replacement"],sCam);
 const sPort={};samsungModels.forEach(m=>{if(m!=="Other / not listed")sPort[m]=[40,80];});Object.assign(issueMap["Charging Port Replacement"],sPort);
-const device=document.getElementById("device"),model=document.getElementById("model"),issue=document.getElementById("issue"),custom=document.getElementById("customInput"),result=document.getElementById("quote-result"),message=document.getElementById("quote-message"),details=document.getElementById("quote-details"),submitBtn=document.getElementById("submitBtn");
-const modelIssueRow=document.getElementById("model-issue-row"),otherFields=document.getElementById("other-fields"),otherModel=document.getElementById("otherModel"),otherIssue=document.getElementById("otherIssue");
+const device=document.getElementById("device"),model=document.getElementById("model"),issue=document.getElementById("issue"),result=document.getElementById("quote-result"),message=document.getElementById("quote-message"),details=document.getElementById("quote-details"),submitBtn=document.getElementById("submitBtn");
+const modelIssueRow=document.getElementById("model-issue-row"),otherFields=document.getElementById("other-fields"),otherModel=document.getElementById("otherModel"),otherIssue=document.getElementById("otherIssue"),notesInput=document.getElementById("notesInput");
 function showResult(html){result.innerHTML=html;result.classList.add("show");}
 function syncMessage(){
+  const notes=notesInput.value;
   let text;
   if(device.value==="other"){
-    text=`Device: other\nModel: ${otherModel.value||"(not specified)"}\nIssue: ${otherIssue.value||"(not specified)"}\nNotes: ${custom.value||"-"}`;
+    text=`Device: other\nModel: ${otherModel.value||"(not specified)"}\nIssue: ${otherIssue.value||"(not specified)"}\nNotes: ${notes||"-"}`;
   } else {
-    text=`Device: ${device.value||"(not selected)"}\nModel: ${model.value||custom.value||"(see notes)"}\nIssue: ${issue.value||"(see notes)"}\nNotes: ${custom.value||"-"}`;
+    text=`Device: ${device.value||"(not selected)"}\nModel: ${model.value||"(see notes)"}\nIssue: ${issue.value||"(see notes)"}\nNotes: ${notes||"-"}`;
   }
   message.value=text;details.value=text;
 }
-custom.addEventListener("input",()=>{syncMessage();});
+notesInput.addEventListener("input",()=>{syncMessage();});
 otherModel.addEventListener("input",()=>{syncMessage();});
 otherIssue.addEventListener("input",()=>{syncMessage();});
 device.onchange=()=>{
   model.innerHTML="";issue.innerHTML="";result.classList.remove("show");result.innerHTML="";
-  custom.style.display="none";custom.value="";custom.placeholder="Additional notes (optional)…";
   otherFields.style.display="none";otherModel.value="";otherIssue.value="";
   modelIssueRow.style.display="";
   if(device.value==="iphone"){populate(model,iphoneModels);issue.disabled=true;issue.innerHTML="<option>Select model first</option>";}
   else if(device.value==="samsung"){populate(model,samsungModels);issue.disabled=true;issue.innerHTML="<option>Select model first</option>";}
-  else if(device.value==="other"){modelIssueRow.style.display="none";otherFields.style.display="";showResult("<p style='margin:0'>Tell us what you've got below — we'll review and send a custom quote with your shipping label.</p>");}
+  else if(device.value==="other"){modelIssueRow.style.display="none";otherFields.style.display="";showResult("<p style='margin:0'>Tell us what you've got — we'll review and send a custom quote with your shipping label.</p>");}
   syncMessage();
 };
 model.onchange=()=>{
-  if(model.value==="Other / not listed"){custom.style.display="block";issue.disabled=true;issue.innerHTML="<option>Describe below</option>";showResult("<p style='margin:0'>Add your model and issue below — we'll send a custom quote with your shipping label.</p>");syncMessage();return;}
-  custom.style.display="none";custom.value="";
+  if(model.value==="Other / not listed"){issue.disabled=true;issue.innerHTML="<option>Describe in notes</option>";showResult("<p style='margin:0'>Add your model details and issue in the notes below — we'll send a custom quote with your shipping label.</p>");syncMessage();return;}
   let list=issues;if(device.value==="samsung")list=issues.filter(i=>i!=="Speaker / Buttons");
   populate(issue,list);result.classList.remove("show");syncMessage();
 };
 function getLabor(i){if(i.includes("Screen"))return labor.Screen;if(i.includes("Battery"))return labor.Battery;if(i.includes("Camera"))return labor.Camera;if(i.includes("Port"))return labor.Port;return labor.Speaker;}
 issue.onchange=()=>{
-  if(issue.value==="Other / not sure"){custom.style.display="block";showResult("<p style='margin:0'>No problem — describe the issue below and we'll send a custom quote with your shipping label.</p>");syncMessage();return;}
-  custom.style.display="none";custom.value="";
+  if(issue.value==="Other / not sure"){showResult("<p style='margin:0'>No problem — describe the issue in the notes below and we'll send a custom quote with your shipping label.</p>");syncMessage();return;}
   const part=issueMap[issue.value]?.[model.value];
-  if(!part){custom.style.display="block";showResult("<p style='margin:0'>We'll need to confirm pricing for this one — add any notes below and we'll send a custom quote.</p>");syncMessage();return;}
+  if(!part){showResult("<p style='margin:0'>We'll need to confirm pricing for this one — add any details in the notes below and we'll send a custom quote.</p>");syncMessage();return;}
   const lc=getLabor(issue.value);let min,max;
   if(Array.isArray(part)){min=part[0]+lc;max=part[1]+lc;}else{min=max=part+lc;}
   const priceText=min===max?`$${min}`:`$${min} – $${max}`;
   showResult(`<div class="price">${priceText}</div><small>Estimated. Final price confirmed after diagnostic. We use high-quality parts — ask about cheaper alternatives in the notes.</small>`);
-  message.value=`Device: ${device.value}\nModel: ${model.value}\nIssue: ${issue.value}\nEstimated Price: ${priceText}`;details.value=message.value;
+  const notes=notesInput.value;
+  message.value=`Device: ${device.value}\nModel: ${model.value}\nIssue: ${issue.value}\nEstimated Price: ${priceText}\nNotes: ${notes||"-"}`;details.value=message.value;
 };
 function populate(sel,list){sel.disabled=false;sel.innerHTML='<option value="">Select…</option>';list.forEach(v=>{const o=document.createElement("option");o.value=v;o.textContent=v;sel.appendChild(o);});}
 syncMessage();
