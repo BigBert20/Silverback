@@ -458,7 +458,7 @@ device.onchange=()=>{
   modelIssueRow.style.display="";
   if(device.value==="iphone"){populate(model,iphoneModels);issue.disabled=true;issue.innerHTML="<option>Select model first</option>";}
   else if(device.value==="samsung"){populate(model,samsungModels);issue.disabled=true;issue.innerHTML="<option>Select model first</option>";}
-  else if(device.value==="other"){modelIssueRow.style.display="none";otherFields.style.display="";showResult("<p style='margin:0'>Tell us what you've got — we'll review and send a custom quote with your shipping label.</p>");}
+  else if(device.value==="other"){modelIssueRow.style.display="none";otherFields.style.display="";showResult("<p style='margin:0'>Tell us what you've got — we'll review and send a custom quote.</p>");}
   syncMessage();
 };
 model.onchange=()=>{
