@@ -231,8 +231,8 @@ section{padding:84px 0}
     <div class="ship-card">
       <h4>How it works</h4>
       <div class="ship-step"><div class="n">1</div><div><b>Get your quote</b><small>Pick your device below — price in seconds.</small></div></div>
-      <div class="ship-step"><div class="n">2</div><div><b>We confirm & send a label</b><small>Lock in your repair and we email your shipping label.</small></div></div>
-      <div class="ship-step"><div class="n">3</div><div><b>Drop it in the mail</b><small>Box it up, attach the label, hand it off.</small></div></div>
+      <div class="ship-step"><div class="n">2</div><div><b>We confirm your repair</b><small>We review and email you a confirmation with our address.</small></div></div>
+      <div class="ship-step"><div class="n">3</div><div><b>Pack & ship it in</b><small>Box it up and ship it to us — inbound shipping is on you.</small></div></div>
       <div class="ship-step"><div class="n">4</div><div><b>Fixed & returned</b><small>We repair it and ship it back to your door.</small></div></div>
     </div>
   </div>
@@ -246,8 +246,8 @@ section{padding:84px 0}
     </div>
     <div class="steps-grid">
       <div class="step-card reveal"><div class="ic"><i class="fas fa-bolt"></i></div><div class="stepno">STEP 1</div><h3>Get a Quote</h3><p>Pick your device and issue for an instant estimate. No commitment.</p></div>
-      <div class="step-card reveal"><div class="ic"><i class="fas fa-tag"></i></div><div class="stepno">STEP 2</div><h3>Confirm & Get Label</h3><p>We confirm your repair and email you a shipping label.</p></div>
-      <div class="step-card reveal"><div class="ic"><i class="fas fa-truck-fast"></i></div><div class="stepno">STEP 3</div><h3>Ship It In</h3><p>Pack it up, attach the label, and drop it at any carrier. Tracking included.</p></div>
+      <div class="step-card reveal"><div class="ic"><i class="fas fa-tag"></i></div><div class="stepno">STEP 2</div><h3>We Confirm Your Repair</h3><p>We review and email you a confirmation with our address and instructions.</p></div>
+      <div class="step-card reveal"><div class="ic"><i class="fas fa-truck-fast"></i></div><div class="stepno">STEP 3</div><h3>Pack & Ship It In</h3><p>Box it up and ship it to us using any carrier — inbound shipping cost is yours to cover.</p></div>
       <div class="step-card reveal"><div class="ic"><i class="fas fa-shield-halved"></i></div><div class="stepno">STEP 4</div><h3>We Fix & Return</h3><p>We repair it with quality parts and ship it back to your door.</p></div>
     </div>
     <div class="steps-cta reveal"><a href="#quote" class="btn btn-primary"><i class="fas fa-arrow-down"></i> Start My Repair</a></div>
@@ -328,7 +328,7 @@ section{padding:84px 0}
     <div class="section-head reveal">
       <span class="eyebrow">Instant Quote</span>
       <h2>Get your price, then mail it in</h2>
-      <p>Pick your device and issue for an instant estimate. Submit and we'll confirm your repair and send your shipping label.</p>
+      <p>Pick your device and issue for an instant estimate. Submit and we'll confirm your repair — then you ship it in, we fix it and send it back.</p>
     </div>
     <div class="quote-wrap reveal">
       <div class="qcalc">
@@ -359,7 +359,7 @@ section{padding:84px 0}
           </div>
           <input type="email" name="email" placeholder="Email Address" required>
           <textarea name="notes" id="notesInput" rows="3" placeholder="Anything else we should know? (optional)"></textarea>
-          <button type="submit" id="submitBtn">Request My Repair &amp; Shipping Label</button>
+          <button type="submit" id="submitBtn">Request My Repair</button>
         </form>
       </div>
     </div>
@@ -462,13 +462,13 @@ device.onchange=()=>{
   syncMessage();
 };
 model.onchange=()=>{
-  if(model.value==="Other / not listed"){issue.disabled=true;issue.innerHTML="<option>Describe in notes</option>";showResult("<p style='margin:0'>Add your model details and issue in the notes below — we'll send a custom quote with your shipping label.</p>");syncMessage();return;}
+  if(model.value==="Other / not listed"){issue.disabled=true;issue.innerHTML="<option>Describe in notes</option>";showResult("<p style='margin:0'>Add your model details and issue in the notes below — we'll send a custom quote.</p>");syncMessage();return;}
   let list=issues;if(device.value==="samsung")list=issues.filter(i=>i!=="Speaker / Buttons");
   populate(issue,list);result.classList.remove("show");syncMessage();
 };
 function getLabor(i){if(i.includes("Screen"))return labor.Screen;if(i.includes("Battery"))return labor.Battery;if(i.includes("Camera"))return labor.Camera;if(i.includes("Port"))return labor.Port;return labor.Speaker;}
 issue.onchange=()=>{
-  if(issue.value==="Other / not sure"){showResult("<p style='margin:0'>No problem — describe the issue in the notes below and we'll send a custom quote with your shipping label.</p>");syncMessage();return;}
+  if(issue.value==="Other / not sure"){showResult("<p style='margin:0'>No problem — describe the issue in the notes below and we'll send a custom quote.</p>");syncMessage();return;}
   const part=issueMap[issue.value]?.[model.value];
   if(!part){showResult("<p style='margin:0'>We'll need to confirm pricing for this one — add any details in the notes below and we'll send a custom quote.</p>");syncMessage();return;}
   const lc=getLabor(issue.value);let min,max;
