@@ -163,7 +163,7 @@ section{padding:84px 0}
 .socials a:hover{background:var(--black);color:#fff;transform:translateY(-3px)}
 .cform{background:#fff;border:1px solid var(--line);border-radius:var(--radius-lg);padding:34px;display:grid;gap:14px}
 .cform .field-row{margin:0}
-.cform input,.cform textarea{width:100%;padding:13px 15px;border:1.5px solid var(--line);border-radius:11px;font-family:inherit;font-size:1rem;transition:border-color .2s}
+.cform input,.cform select,.cform textarea{width:100%;padding:13px 15px;border:1.5px solid var(--line);border-radius:11px;font-family:inherit;font-size:1rem;transition:border-color .2s}
 .cform input:focus,.cform textarea:focus{outline:none;border-color:var(--accent)}
 .cform button{padding:15px;border:none;border-radius:50px;background:var(--black);color:#fff;font-family:'Sora';font-weight:600;font-size:.98rem;cursor:pointer;transition:.2s}
 .cform button:hover{transform:translateY(-2px);box-shadow:var(--shadow-sm)}
@@ -339,6 +339,11 @@ section{padding:84px 0}
           <option value="samsung">Samsung Galaxy</option>
           <option value="other">Something else (laptop, console, board, etc.)</option>
         </select>
+        <label for="serviceType">How will you get it to us?</label>
+        <select id="serviceType">
+          <option value="mail-in" selected>Mail it in (we send a prepaid shipping label)</option>
+          <option value="local">Local drop-off (Round Lake, IL)</option>
+        </select>
         <div class="field-row" id="model-issue-row">
           <div><label for="model">Model</label><select id="model" disabled><option>Select device first</option></select></div>
           <div><label for="issue">Issue</label><select id="issue" disabled><option>Select model first</option></select></div>
@@ -396,6 +401,10 @@ section{padding:84px 0}
           <input type="text" name="subject" placeholder="Subject" required>
           <input type="text" name="phone" placeholder="Phone Number" required>
         </div>
+        <select name="serviceType">
+          <option value="local" selected>Local drop-off (Round Lake, IL)</option>
+          <option value="mail-in">Mail it in</option>
+        </select>
         <textarea name="message" rows="4" placeholder="How can we help?" required></textarea>
         <button type="submit">Send Message</button>
       </form>
@@ -436,7 +445,8 @@ const sBatt={};samsungModels.forEach(m=>{if(m!=="Other / not listed")sBatt[m]=[2
 const sCam={"S25 FE":[110,125],"S25 Edge":[110,125],"S25 Ultra":[110,125],"S25 Plus":[85,110],"S25":[85,110],"S24 FE":[110,125],"S24 Ultra":[110,125],"S24 Plus":[110,125],"S24":[85,110],"S23 FE":[85,110],"S23 Ultra":[110,125],"S23 Plus":[110,125],"S23":[110,125],"S22 Ultra":[110,125],"S22 Plus":[85,110],"S22":[110,125],"S21 FE":[85,110],"S21 Ultra":[110,125],"S21 Plus":[110,125],"S21":[110,125],"S20 FE":[85,110],"S20 Ultra":[85,110],"S20 Plus":[110,125],"S20":[110,125],"S10 5G":[85,110],"S10 Plus":[85,110],"S10":[110,125]};
 Object.assign(issueMap["Back Camera Replacement"],sCam);Object.assign(issueMap["Front Camera Replacement"],sCam);
 const sPort={};samsungModels.forEach(m=>{if(m!=="Other / not listed")sPort[m]=[40,80];});Object.assign(issueMap["Charging Port Replacement"],sPort);
-const device=document.getElementById("device"),model=document.getElementById("model"),issue=document.getElementById("issue"),result=document.getElementById("quote-result"),message=document.getElementById("quote-message"),details=document.getElementById("quote-details"),submitBtn=document.getElementById("submitBtn");
+const shippingRoundTrip=27; // avg cost of the prepaid inbound + return labels — folded into the price, not shown as a separate line
+const device=document.getElementById("device"),model=document.getElementById("model"),issue=document.getElementById("issue"),serviceType=document.getElementById("serviceType"),result=document.getElementById("quote-result"),message=document.getElementById("quote-message"),details=document.getElementById("quote-details"),submitBtn=document.getElementById("submitBtn");
 const modelIssueRow=document.getElementById("model-issue-row"),otherFields=document.getElementById("other-fields"),otherModel=document.getElementById("otherModel"),otherIssue=document.getElementById("otherIssue"),notesInput=document.getElementById("notesInput");
 function showResult(html){result.innerHTML=html;result.classList.add("show");}
 function syncMessage(){
@@ -471,7 +481,7 @@ issue.onchange=()=>{
   if(issue.value==="Other / not sure"){showResult("<p style='margin:0'>No problem — describe the issue in the notes below and we'll send a custom quote.</p>");syncMessage();return;}
   const part=issueMap[issue.value]?.[model.value];
   if(!part){showResult("<p style='margin:0'>We'll need to confirm pricing for this one — add any details in the notes below and we'll send a custom quote.</p>");syncMessage();return;}
-  const lc=getLabor(issue.value);let min,max;
+  const lc=getLabor(issue.value)+(serviceType.value==="mail-in"?shippingRoundTrip:0);let min,max;
   if(Array.isArray(part)){min=part[0]+lc;max=part[1]+lc;}else{min=max=part+lc;}
   const priceText=min===max?`$${min}`:`$${min} – $${max}`;
   showResult(`<div class="price">${priceText}</div><small>Estimated. Final price confirmed after diagnostic. We use high-quality parts — ask about cheaper alternatives in the notes.</small>`);
@@ -479,6 +489,7 @@ issue.onchange=()=>{
   message.value=`Device: ${device.value}\nModel: ${model.value}\nIssue: ${issue.value}\nEstimated Price: ${priceText}\nNotes: ${notes||"-"}`;details.value=message.value;
 };
 function populate(sel,list){sel.disabled=false;sel.innerHTML='<option value="">Select…</option>';list.forEach(v=>{const o=document.createElement("option");o.value=v;o.textContent=v;sel.appendChild(o);});}
+serviceType.onchange=()=>{if(issue.value)issue.onchange();};
 syncMessage();
 const quoteForm=document.getElementById("quoteForm");
 quoteForm.addEventListener("submit",async function(e){
@@ -504,7 +515,7 @@ quoteForm.addEventListener("submit",async function(e){
   try{
     const res=await fetch("https://app.silverbackrepairs.com/api/quotes/public",{
       method:"POST",headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({name:nameVal,email:emailVal,phone:phoneVal,device:deviceStr,issue:issueStr,service_type:"mail-in"})
+      body:JSON.stringify({name:nameVal,email:emailVal,phone:phoneVal,device:deviceStr,issue:issueStr,service_type:serviceType.value})
     });
     if(!res.ok)throw new Error("failed");
     quoteForm.innerHTML='<p style="text-align:center;padding:24px 0;font-family:Sora;font-weight:600">✅ Request received! We\'ll review and email you shortly with next steps.</p>';
@@ -529,7 +540,7 @@ contactForm.addEventListener("submit",async function(e){
         name:data.get("name"),email:data.get("email"),phone:data.get("phone"),
         device:"General Inquiry",
         issue:`Subject: ${data.get("subject")} | Message: ${data.get("message")}`,
-        service_type:"local"
+        service_type:data.get("serviceType")
       })
     });
     if(!res.ok)throw new Error("failed");
