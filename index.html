@@ -445,7 +445,7 @@ const sBatt={};samsungModels.forEach(m=>{if(m!=="Other / not listed")sBatt[m]=[2
 const sCam={"S25 FE":[110,125],"S25 Edge":[110,125],"S25 Ultra":[110,125],"S25 Plus":[85,110],"S25":[85,110],"S24 FE":[110,125],"S24 Ultra":[110,125],"S24 Plus":[110,125],"S24":[85,110],"S23 FE":[85,110],"S23 Ultra":[110,125],"S23 Plus":[110,125],"S23":[110,125],"S22 Ultra":[110,125],"S22 Plus":[85,110],"S22":[110,125],"S21 FE":[85,110],"S21 Ultra":[110,125],"S21 Plus":[110,125],"S21":[110,125],"S20 FE":[85,110],"S20 Ultra":[85,110],"S20 Plus":[110,125],"S20":[110,125],"S10 5G":[85,110],"S10 Plus":[85,110],"S10":[110,125]};
 Object.assign(issueMap["Back Camera Replacement"],sCam);Object.assign(issueMap["Front Camera Replacement"],sCam);
 const sPort={};samsungModels.forEach(m=>{if(m!=="Other / not listed")sPort[m]=[40,80];});Object.assign(issueMap["Charging Port Replacement"],sPort);
-const shippingRoundTrip=27; // avg cost of the prepaid inbound + return labels — folded into the price, not shown as a separate line
+const shippingRoundTrip=27; // avg cost of the prepaid inbound + return labels — folded into every price (mail-in and drop-off alike) so the number shown doesn't change based on service type
 const device=document.getElementById("device"),model=document.getElementById("model"),issue=document.getElementById("issue"),serviceType=document.getElementById("serviceType"),result=document.getElementById("quote-result"),message=document.getElementById("quote-message"),details=document.getElementById("quote-details"),submitBtn=document.getElementById("submitBtn");
 const modelIssueRow=document.getElementById("model-issue-row"),otherFields=document.getElementById("other-fields"),otherModel=document.getElementById("otherModel"),otherIssue=document.getElementById("otherIssue"),notesInput=document.getElementById("notesInput");
 function showResult(html){result.innerHTML=html;result.classList.add("show");}
@@ -481,7 +481,7 @@ issue.onchange=()=>{
   if(issue.value==="Other / not sure"){showResult("<p style='margin:0'>No problem — describe the issue in the notes below and we'll send a custom quote.</p>");syncMessage();return;}
   const part=issueMap[issue.value]?.[model.value];
   if(!part){showResult("<p style='margin:0'>We'll need to confirm pricing for this one — add any details in the notes below and we'll send a custom quote.</p>");syncMessage();return;}
-  const lc=getLabor(issue.value)+(serviceType.value==="mail-in"?shippingRoundTrip:0);let min,max;
+  const lc=getLabor(issue.value)+shippingRoundTrip;let min,max;
   if(Array.isArray(part)){min=part[0]+lc;max=part[1]+lc;}else{min=max=part+lc;}
   const priceText=min===max?`$${min}`:`$${min} – $${max}`;
   showResult(`<div class="price">${priceText}</div><small>Estimated. Final price confirmed after diagnostic. We use high-quality parts — ask about cheaper alternatives in the notes.</small>`);
@@ -489,7 +489,6 @@ issue.onchange=()=>{
   message.value=`Device: ${device.value}\nModel: ${model.value}\nIssue: ${issue.value}\nEstimated Price: ${priceText}\nNotes: ${notes||"-"}`;details.value=message.value;
 };
 function populate(sel,list){sel.disabled=false;sel.innerHTML='<option value="">Select…</option>';list.forEach(v=>{const o=document.createElement("option");o.value=v;o.textContent=v;sel.appendChild(o);});}
-serviceType.onchange=()=>{if(issue.value)issue.onchange();};
 syncMessage();
 const quoteForm=document.getElementById("quoteForm");
 quoteForm.addEventListener("submit",async function(e){
