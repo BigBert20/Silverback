@@ -146,6 +146,9 @@ section{padding:84px 0}
 #quote-result small{color:var(--muted);font-size:.84rem;display:block;margin-top:10px}
 .qform{margin-top:24px;display:grid;gap:13px}
 .qform input,.qform textarea,.qform .field-row{margin:0}
+.consent-check{display:flex;align-items:flex-start;gap:8px;font-size:.8rem;color:var(--muted);cursor:pointer;line-height:1.5}
+.consent-check input{width:auto;margin-top:3px;flex-shrink:0}
+.consent-check a{text-decoration:underline}
 #submitBtn{margin-top:6px;width:100%;padding:16px;border:none;border-radius:50px;background:var(--black);color:#fff;font-family:'Sora';font-weight:600;font-size:1rem;cursor:pointer;transition:transform .2s,box-shadow .2s}
 #submitBtn:hover{transform:translateY(-2px);box-shadow:0 12px 28px -12px rgba(21,22,26,.6)}
 .quote-note{text-align:center;color:rgba(255,255,255,.6);font-size:.86rem;margin-top:18px}
@@ -364,6 +367,10 @@ section{padding:84px 0}
           </div>
           <input type="email" name="email" placeholder="Email Address" required>
           <textarea name="notes" id="notesInput" rows="3" placeholder="Anything else we should know? (optional)"></textarea>
+          <label class="consent-check">
+            <input type="checkbox" id="quoteSmsConsent" required>
+            <span>I agree to receive text messages from Silverback Tech Repairs about my repair status. Message frequency varies. Message and data rates may apply. Reply STOP to opt out, HELP for help. See our <a href="https://app.silverbackrepairs.com/privacy" target="_blank">Privacy Policy</a>.</span>
+          </label>
           <button type="submit" id="submitBtn">Request My Repair</button>
         </form>
       </div>
@@ -406,6 +413,10 @@ section{padding:84px 0}
           <option value="mail-in">Mail it in</option>
         </select>
         <textarea name="message" rows="4" placeholder="How can we help?" required></textarea>
+        <label class="consent-check">
+          <input type="checkbox" id="contactSmsConsent" required>
+          <span>I agree to receive text messages from Silverback Tech Repairs about my repair status. Message frequency varies. Message and data rates may apply. Reply STOP to opt out, HELP for help. See our <a href="https://app.silverbackrepairs.com/privacy" target="_blank">Privacy Policy</a>.</span>
+        </label>
         <button type="submit">Send Message</button>
       </form>
     </div>
