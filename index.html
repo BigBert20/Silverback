@@ -368,7 +368,7 @@ section{padding:84px 0}
           <input type="email" name="email" placeholder="Email Address" required>
           <textarea name="notes" id="notesInput" rows="3" placeholder="Anything else we should know? (optional)"></textarea>
           <label class="consent-check">
-            <input type="checkbox" id="quoteSmsConsent" required>
+            <input type="checkbox" id="quoteSmsConsent">
             <span>I agree to receive text messages from Silverback Tech Repairs about my repair status. Message frequency varies. Message and data rates may apply. Reply STOP to opt out, HELP for help. See our <a href="https://app.silverbackrepairs.com/privacy" target="_blank">Privacy Policy</a>.</span>
           </label>
           <button type="submit" id="submitBtn">Request My Repair</button>
@@ -414,7 +414,7 @@ section{padding:84px 0}
         </select>
         <textarea name="message" rows="4" placeholder="How can we help?" required></textarea>
         <label class="consent-check">
-          <input type="checkbox" id="contactSmsConsent" required>
+          <input type="checkbox" id="contactSmsConsent">
           <span>I agree to receive text messages from Silverback Tech Repairs about my repair status. Message frequency varies. Message and data rates may apply. Reply STOP to opt out, HELP for help. See our <a href="https://app.silverbackrepairs.com/privacy" target="_blank">Privacy Policy</a>.</span>
         </label>
         <button type="submit">Send Message</button>
@@ -525,7 +525,7 @@ quoteForm.addEventListener("submit",async function(e){
   try{
     const res=await fetch("https://app.silverbackrepairs.com/api/quotes/public",{
       method:"POST",headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({name:nameVal,email:emailVal,phone:phoneVal,device:deviceStr,issue:issueStr,service_type:serviceType.value})
+      body:JSON.stringify({name:nameVal,email:emailVal,phone:phoneVal,device:deviceStr,issue:issueStr,service_type:serviceType.value,sms_consent:document.getElementById("quoteSmsConsent").checked})
     });
     if(!res.ok)throw new Error("failed");
     window.location.href="thank-you.html";
@@ -550,7 +550,8 @@ contactForm.addEventListener("submit",async function(e){
         name:data.get("name"),email:data.get("email"),phone:data.get("phone"),
         device:"General Inquiry",
         issue:`Subject: ${data.get("subject")} | Message: ${data.get("message")}`,
-        service_type:data.get("serviceType")
+        service_type:data.get("serviceType"),
+        sms_consent:document.getElementById("contactSmsConsent").checked
       })
     });
     if(!res.ok)throw new Error("failed");
